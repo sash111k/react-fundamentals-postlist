@@ -1,36 +1,34 @@
-import React, {useState} from 'react';
-import "./styles/app.css"
-import PostList from "./Components/PostList/PostList";
-import PostForm from "./Components/PostForm/PostForm";
+import React, {useEffect, useState} from 'react';
+import About from "./pages/About";
+import {BrowserRouter, Link, Redirect, Route, Routes, Navigate} from "react-router-dom";
+import Posts from "./pages/Posts";
+import NavBar from "./Components/Navigation/NavBar";
+import Error from "./pages/error";
+import AppRouter from "./Components/AppRouter/AppRouter";
+import {AuthContext} from "./context";
+
 
 function App() {
-  const [posts, setPosts] = useState([
-      {id: 1, title: 'ReactApp', body: 'Description'},
-      {id: 2, title: 'ReactApp', body: 'Description'},
-      {id: 3, title: 'ReactApp', body: 'Description'},
-      {id: 4, title: 'ReactApp', body: 'Description'}
-  ]);
-
-  function createPost(newPost){
-      setPosts([...posts, newPost])
-  }
-
-  function removePost(post){
-      setPosts(posts.filter(p => {
-          return p.id !== post.id
-      }))
-  }
-
-  return (
-    <div className="App">
-        <PostForm create={createPost}/>
-        {posts.length !== 0 ?
-            <PostList remove={removePost} posts = {posts} title={'Список постов'}/>
-            : <h1 style={{textAlign : 'center'}}>Посты не найдены</h1>
+    const [isAuth, setIsAuth] = useState(false);
+    const [isLoading, setIsLoading] = useState(true)
+    useEffect(() => {
+        if (localStorage.getItem('auth')){
+            setIsAuth(true);
         }
-
-    </div>
-  );
+        setIsLoading(false)
+    })
+    return (
+        <AuthContext.Provider value={{
+            isAuth,
+            setIsAuth,
+            isLoading
+        }}>
+            <BrowserRouter>
+                <NavBar/>
+                <AppRouter></AppRouter>
+            </BrowserRouter>
+        </AuthContext.Provider>
+    )
 }
 
 export default App;
